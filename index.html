@@ -233,7 +233,17 @@ main{
   transform-origin:center;
   will-change:transform;
 }
-.tile.w2{font-size:calc(var(--tile) * .3)}           /* ու / և tiles */
+.tile.w2{
+  /* ու (and և) are two-glyph tiles, so they get their own font size.
+     The old value (.30) rendered them at barely half the height of the
+     single letters; a truly letter-for-letter match cannot work either,
+     because «ու» is twice as wide as «ն» and would break the tile grid.
+     .48 keeps the x-height and stroke weight identical to the letters
+     around it (the two-glyph tile simply reads wider, like «QU» in Quordle). */
+  font-size:calc(var(--tile) * .48);
+  letter-spacing:-.04em;         /* optical tightening of the single tile */
+  white-space:nowrap;
+}
 .tile.filled{border-color:var(--muted); animation:pop .1s ease}
 .tile.active{border-color:var(--text)}
 
