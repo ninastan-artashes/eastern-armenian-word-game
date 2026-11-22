@@ -34,9 +34,10 @@
 
   --tile:clamp(48px, 6vw, 88px);
   --gap:4px;                    /* tight gutters — the tiles should read big */
-  /* uniform keyboard cell size — every letter and action key is the same size,
-     centred horizontally per row. The width (--kw) is set by JS (sizeKeys());
-     the height (--kh) is set via media queries so it scales with the viewport. */
+  /* uniform letter-cell size — every letter key is the same size, centred
+     horizontally per row. The ⌫ / ENTER action keys are slightly larger.
+     The width (--kw) is set by JS (sizeKeys()); the height (--kh) is set via
+     media queries so it scales with the viewport. */
   --kw:46px;
   --kh:40px;
   --radius:7px;
@@ -264,12 +265,17 @@ main{
   display:flex;
   gap:5px;
   justify-content:center;
+  align-items:center;
   width:100%;
 }
 
 /* Every key is one fixed-size cell — the size is computed by JS so the
    widest row (eleven keys) fills the board, and narrower rows centre
    themselves with whitespace on each side. */
+/* the game is tappable — kill the double-tap zoom that mobile browsers
+   trigger on rapid taps (single tap still works everywhere) */
+button{touch-action:manipulation}
+
 .key{
   flex:0 0 auto;
   width:var(--kw);
@@ -295,11 +301,13 @@ main{
 
 .key.wide{
   flex:0 0 auto;
-  width:var(--kw);
-  height:var(--kh);
-  font-size:10px;
+  width:calc(var(--kw) * 1.32);
+  height:calc(var(--kh) * 1.15);
+  font-size:10px;                   /* auto-fitted by sizeKeys() when needed */
   font-weight:600;
-  letter-spacing:.1em;
+  letter-spacing:.05em;
+  white-space:nowrap;
+  overflow:hidden;
 }
 
 /* ── game layout ──────────────────────────────────────────────────── */
@@ -1077,10 +1085,12 @@ function buildBoard(){
   sizeKeys();
 }
 
-/* Size every keyboard key to one fixed cell. The keyboard's width comes from
+/* Size every letter key to one fixed cell. The keyboard's width comes from
    CSS (never from its content), so the widest row (11 keys) fills the board
-   and narrower rows centre themselves with equal side margins — every key
-   (letter and action) ends up the same size. */
+   and narrower rows centre themselves with equal side margins. The ⌫ / ENTER
+   action keys sit on the bottom row and are slightly larger via the .wide
+   rule — the bottom row still stays narrower than the 11-key rows, so it
+   centres itself too. */
 function sizeKeys(){
   const kb = $("#keyboard");
   if (!kb) return;
@@ -1096,7 +1106,30 @@ function sizeKeys(){
   const w = Math.floor((avail - 10 * rowGap) / 11);
   /* no floor that would break the row: when the keyboard is too narrow for the
      gap + a usable cell, let the cell shrink instead of overflowing the panel */
-  document.documentElement.style.setProperty("--kw", Math.max(12, Math.min(64, w)) + "px");
+  const kw = Math.max(12, Math.min(64, w));
+  document.documentElement.style.setProperty("--kw", kw + "px");
+  fitActionLabels();
+}
+
+/* Shrink the action-key labels until they fit their cells — kept small enough
+   to scale down on narrow screens (phones, landscape) */
+function fitActionLabels(){
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  $$("#keyboard .key.wide").forEach(k => {
+    const cellW = k.getBoundingClientRect().width - 4;
+    const base = parseFloat(getComputedStyle(k).fontSize);
+    const ls = parseFloat(getComputedStyle(k).letterSpacing) || 0;
+    let size = base, textW = Infinity;
+    ctx.font = `600 ${base}px "Noto Sans Armenian"`;
+    textW = ctx.measureText(k.textContent).width + (k.textContent.length - 1) * ls;
+    while (textW > cellW && size > 4) {
+      size = Math.max(4, size - 0.5);
+      ctx.font = `600 ${size}px "Noto Sans Armenian"`;
+      textW = ctx.measureText(k.textContent).width + (k.textContent.length - 1) * ls;
+    }
+    k.style.fontSize = size + "px";
+  });
 }
 
 /* Fit the board to the space actually available.
@@ -1202,7 +1235,7 @@ function measureAndApplyTile(){
   const byW = (availW - (cfg.len - 1) * rowGap) / cfg.len;
   const byH = (availH - (MAX_GUESSES - 1) * rowGap) / MAX_GUESSES;
   /* A 320×568 phone genuinely cannot fit six rows of 26px tiles plus a
-     five-row keyboard, so the floor drops for very small viewports —
+     four-row keyboard, so the floor drops for very small viewports —
      an overflowed board is worse than small squares. */
   const floor = window.innerHeight < 620 ? 18 : 24;
   const size = Math.max(floor, Math.min(96, Math.floor(Math.min(byW, byH))));
@@ -1220,9 +1253,17 @@ function measureAndApplyTile(){
 function buildKeyboard(){
   const kb = $("#keyboard");
   kb.innerHTML = "";
-  KB_ROWS.forEach(keys => {
+  KB_ROWS.forEach((keys, i) => {
     const row = document.createElement("div");
     row.className = "krow";
+    const isBottom = i === KB_ROWS.length - 1;
+    /* ⌫ on the left, ENTER on the right — both sit on the bottom letter row */
+    if (isBottom) {
+      const del = document.createElement("button");
+      del.className = "key wide"; del.textContent = "⌫"; del.title = "Backspace";
+      del.onclick = backspace;
+      row.appendChild(del);
+    }
     keys.forEach(k => {
       const b = document.createElement("button");
       b.className = "key" + (k.length > 1 ? " w2" : "");
@@ -1231,18 +1272,17 @@ function buildKeyboard(){
       b.onclick = () => addLetter(k);
       row.appendChild(b);
     });
+    if (isBottom) {
+      const ent = document.createElement("button");
+      /* Enter on the physical Armenian phonetic layout is never re-labelled,
+         so the game shows ENTER in both languages — the longer «ՈՒՂԱՐԿԵԼ»
+         does not fit small cells */
+      ent.className = "key wide"; ent.textContent = "ENTER";
+      ent.onclick = submit;
+      row.appendChild(ent);
+    }
     kb.appendChild(row);
   });
-  const last = document.createElement("div");
-  last.className = "krow";
-  const del = document.createElement("button");
-  del.className = "key wide"; del.textContent = "⌫"; del.title = "Backspace";
-  del.onclick = backspace;
-  const ent = document.createElement("button");
-  ent.className = "key wide"; ent.textContent = LANG === "en" ? "ENTER" : "ՈՒՂԱՐԿԵԼ";
-  ent.onclick = submit;
-  last.append(del, ent);
-  kb.appendChild(last);
 }
 function paintKeyboard(state){
   $$("#keyboard .key").forEach(b => {
@@ -1682,5 +1722,5 @@ window.HYWORDLE = { S, cfg, POOLS, META, addLetter, backspace, submit, newGame, 
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5ecd79ac79649',t:'MTc5NTMyOTQ0Mg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5ecd79ac79649',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5fd7b3f74314c',t:'MTc5NTMzMDEyNA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5fd7b3f74314c',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
