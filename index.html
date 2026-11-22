@@ -34,6 +34,11 @@
 
   --tile:clamp(48px, 6vw, 88px);
   --gap:4px;                    /* tight gutters — the tiles should read big */
+  /* uniform keyboard cell size — every letter and action key is the same size,
+     centred horizontally per row. The width (--kw) is set by JS (sizeKeys());
+     the height (--kh) is set via media queries so it scales with the viewport. */
+  --kw:46px;
+  --kh:40px;
   --radius:7px;
   --card:12px;
   --rail:270px;
@@ -247,7 +252,7 @@ main{
   grid-area:keyboard;
   display:flex;
   flex-direction:column;
-  gap:4px;
+  gap:5px;
   padding:10px;
   width:var(--kb-width);
   max-width:760px;
@@ -262,10 +267,13 @@ main{
   width:100%;
 }
 
+/* Every key is one fixed-size cell — the size is computed by JS so the
+   widest row (eleven keys) fills the board, and narrower rows centre
+   themselves with whitespace on each side. */
 .key{
-  flex:1 1 0;
-  min-width:0;
-  height:clamp(36px,3.4vw,42px);
+  flex:0 0 auto;
+  width:var(--kw);
+  height:var(--kh);
   border:1px solid var(--line);
   border-radius:var(--radius);
   background:transparent;
@@ -286,7 +294,11 @@ main{
 .key.absent{background:transparent; border-color:var(--line); color:var(--muted); opacity:.5}
 
 .key.wide{
-  flex:0 0 78px; font-size:10px; font-weight:600;
+  flex:0 0 auto;
+  width:var(--kw);
+  height:var(--kh);
+  font-size:10px;
+  font-weight:600;
   letter-spacing:.1em;
 }
 
@@ -355,20 +367,16 @@ main{
 
   .keyboard{
     flex:0 0 auto;
-    width:100%;
-    max-width:600px;
+    width:min(100%, 600px);
     padding:8px;
     gap:4px;
   }
 
   .krow{gap:4px}
 
-  .key{
-    height:clamp(36px,8vw,42px);
-    font-size:clamp(14px,3.4vw,16px);
-  }
-
-  .key.wide{flex:0 0 60px; font-size:9px; letter-spacing:.1em}
+  :root{ --kh: clamp(28px, 4.6vw, 40px); }
+  .key{ font-size:clamp(13px,3vw,16px); border-radius:6px; }
+  .key.wide{ font-size:9px; letter-spacing:.1em; }
 }
 
 /* ── toast ────────────────────────────────────────────────────────── */
@@ -577,7 +585,7 @@ main{
 @media (max-height:700px){
   header{padding:9px 16px}
   .keyboard{gap:4px; padding:8px}
-  .key{height:clamp(31px,4.2vw,38px)}
+  :root{ --kh: clamp(28px, 3.2vw, 36px); }
   main{padding:2px 4px 2px}
   .board{padding:6px}
   .controls{gap:10px; padding:12px}
@@ -646,22 +654,21 @@ main{
 
   .board{padding:6px; border-radius:10px}
 
-  /* five equal rows stretched to the board's height */
+  /* uniform cells again (not the grid fill): rows stay centred and every
+     key is the same size — that is what the JS --kw/--kh tokens produce */
   .keyboard{
     width:100%;
-    height:100%;
+    flex:0 0 auto;
     padding:6px;
     gap:3px;
     border-radius:10px;
     justify-content:center;
-    display:grid;
-    grid-template-rows:repeat(5, minmax(0,1fr));
-    grid-template-columns:minmax(0,1fr);
   }
-  .krow{gap:4px; flex:1 1 0; min-height:0; height:100%; width:100%}
-  .key{height:100%; font-size:clamp(12px,2.2vh,16px); border-radius:5px}
-  .key.w2{font-size:clamp(9px,1.7vh,12px)}
-  .key.wide{flex:0 0 54px; font-size:8px; letter-spacing:.08em}
+  :root{ --kh: clamp(26px, 5vh, 34px); }
+  .krow{gap:4px}
+  .key{border-radius:5px; font-size:clamp(13px,2.4vh,16px)}
+  .key.w2{font-size:clamp(9px,1.8vh,12px)}
+  .key.wide{font-size:8px; letter-spacing:.08em}
 }
 
 /* ── phones: keep the strapline on ONE line ────────────────────────
@@ -703,7 +710,7 @@ main{
   .board{padding:4px; border-radius:8px}
   main{padding:0}
   .keyboard{padding:5px; gap:3px; border-radius:8px}
-  .key{height:clamp(26px,6vw,34px); border-radius:4px}
+  :root{ --kh: clamp(24px, 4vw, 30px); }
   .krow{gap:3px}
   #segLen, #segMode, #segTier{grid-column:auto; grid-row:auto}
   .seg{width:auto; border-bottom:0; padding-bottom:0}
@@ -1067,6 +1074,29 @@ function buildBoard(){
     board.appendChild(row);
   }
   sizeBoard();
+  sizeKeys();
+}
+
+/* Size every keyboard key to one fixed cell. The keyboard's width comes from
+   CSS (never from its content), so the widest row (11 keys) fills the board
+   and narrower rows centre themselves with equal side margins — every key
+   (letter and action) ends up the same size. */
+function sizeKeys(){
+  const kb = $("#keyboard");
+  if (!kb) return;
+  const pad = parseFloat(getComputedStyle(kb).paddingLeft) + parseFloat(getComputedStyle(kb).paddingRight);
+  const row = kb.querySelector(".krow");
+  let rowGap = 0;
+  if (row) {
+    const cs = getComputedStyle(row);
+    rowGap = parseFloat(cs.columnGap || cs.gap || cs.getPropertyValue("column-gap") || "0") || 0;
+  }
+  if (!rowGap) rowGap = window.innerWidth <= 860 ? 4 : 5;
+  const avail = Math.max(0, kb.clientWidth - pad);
+  const w = Math.floor((avail - 10 * rowGap) / 11);
+  /* no floor that would break the row: when the keyboard is too narrow for the
+     gap + a usable cell, let the cell shrink instead of overflowing the panel */
+  document.documentElement.style.setProperty("--kw", Math.max(12, Math.min(64, w)) + "px");
 }
 
 /* Fit the board to the space actually available.
@@ -1210,7 +1240,6 @@ function buildKeyboard(){
   del.onclick = backspace;
   const ent = document.createElement("button");
   ent.className = "key wide"; ent.textContent = LANG === "en" ? "ENTER" : "ՈՒՂԱՐԿԵԼ";
-  ent.style.flex = "2 1 0";
   ent.onclick = submit;
   last.append(del, ent);
   kb.appendChild(last);
@@ -1623,8 +1652,8 @@ function wire(){
   $("#setStrict").checked = !!cfg.strict;
   $("#setStrict").onchange = (e) => { cfg.strict = e.target.checked; saveCfg(); };
 
-  window.addEventListener("resize", () => setTimeout(sizeBoard, 60));
-  window.addEventListener("orientationchange", () => setTimeout(sizeBoard, 250));
+  window.addEventListener("resize", () => setTimeout(() => { sizeBoard(); sizeKeys(); }, 60));
+  window.addEventListener("orientationchange", () => setTimeout(() => { sizeBoard(); sizeKeys(); }, 250));
 
   document.addEventListener("keydown", (e) => {
     if ($$(".scrim.open").length) return;
@@ -1653,5 +1682,5 @@ window.HYWORDLE = { S, cfg, POOLS, META, addLetter, backspace, submit, newGame, 
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5d9e3bf7fdd96',t:'MTc5NTMyODY2Ng=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5d9e3bf7fdd96',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5ecd79ac79649',t:'MTc5NTMyOTQ0Mg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5ecd79ac79649',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
