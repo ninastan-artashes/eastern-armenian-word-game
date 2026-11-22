@@ -532,28 +532,41 @@ main{
   color:var(--muted); white-space:pre-wrap;
 }
 
+/* ── help panel: links + about me ───────────────────────────────── */
+.helplinks{
+  margin-top:14px; padding-top:12px;
+  border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:6px 20px;
+}
+.helplinks h3, .aboutme h3{
+  width:100%; margin:0 0 2px;
+  font-size:10.5px; font-weight:600; letter-spacing:.08em;
+  color:var(--muted); text-transform:uppercase;
+}
+.helplinks a{
+  color:var(--text); font-size:12px;
+  text-decoration:underline; text-underline-offset:2px;
+  transition:color .15s;
+}
+.helplinks a:hover{color:var(--accent)}
+
+.aboutme{
+  margin-top:14px; padding-top:12px;
+  border-top:1px solid var(--line);
+}
+.aboutme h3{width:100%}
+.abouttext{
+  font-size:12.5px; line-height:1.75; color:var(--muted);
+  white-space:pre-wrap;
+}
+.aboutme[hidden]{display:none}
+
 .answerword{
   font-size:26px; font-weight:600; letter-spacing:.08em;
   text-align:center; margin:14px 0 2px; word-break:break-all;
 }
 
-/* ── footer + corpus credits ──────────────────────────────────────── */
-footer{
-  padding:6px 14px max(12px,env(safe-area-inset-bottom));
-  text-align:center; flex:0 0 auto;
-}
-footer a{
-  color:var(--muted); font-size:10px;
-  letter-spacing:.06em;
-  text-decoration:none;
-  transition:color .15s;
-}
-footer a:hover{color:var(--accent)}
-/* two footer links on one line, wrapping cleanly on phones */
-footer{display:flex; flex-wrap:wrap; justify-content:center; align-items:baseline; gap:2px 14px}
-#siteLink{color:var(--text)}
-#siteLink:hover{color:var(--accent)}
-
+/* ── corpus credits + links + about me (inside the help panel) ──── */
 .corpus{
   margin-top:14px; padding-top:14px;
   border-top:1px solid var(--line);
@@ -569,7 +582,6 @@ footer{display:flex; flex-wrap:wrap; justify-content:center; align-items:baselin
   .board{padding:6px}
   .controls{gap:10px; padding:12px}
   .brand small{font-size:8.5px}
-  footer{padding:0 8px 6px}
 }
 
 /* ── phones held sideways: board and keyboard side by side ────────── */
@@ -650,8 +662,6 @@ footer{display:flex; flex-wrap:wrap; justify-content:center; align-items:baselin
   .key{height:100%; font-size:clamp(12px,2.2vh,16px); border-radius:5px}
   .key.w2{font-size:clamp(9px,1.7vh,12px)}
   .key.wide{flex:0 0 54px; font-size:8px; letter-spacing:.08em}
-
-  footer{display:none}
 }
 
 /* ── phones: keep the strapline on ONE line ────────────────────────
@@ -761,6 +771,16 @@ footer{display:flex; flex-wrap:wrap; justify-content:center; align-items:baselin
     <p class="muted" data-i18n="tierExplain" style="margin-top:12px"></p>
     <div class="storyshow" id="storyShow" hidden></div>
     <div class="corpus" id="corpusInfo"></div>
+    <div class="helplinks" id="helpLinks">
+      <h3 data-i18n="linksTitle">Հղումներ</h3>
+      <a href="https://ninastan-artashes.github.io/index.html" id="siteLink" target="_blank" rel="noopener">Հայերենի Քերականություն</a>
+      <a href="https://github.com/ninastan-artashes/eastern-armenian-wordle" id="repoLink" target="_blank" rel="noopener" data-i18n="footer">Բառացանկը՝ հայերեն Վիքիպեդիայի կորպուսից</a>
+    </div>
+    <div class="aboutme" id="aboutMe" hidden>
+      <h3 data-i18n="aboutTitle">Իմ մասին</h3>
+      <!-- This is a static block, not editable by visitors: the text is written by the site owner. Fill in your introduction here. -->
+      <div class="abouttext" id="aboutStatic"></div>
+    </div>
   </div>
 </div>
 
@@ -831,10 +851,6 @@ footer{display:flex; flex-wrap:wrap; justify-content:center; align-items:baselin
   </div>
 </div>
 
-<footer>
-  <a href="https://ninastan-artashes.github.io/index.html" id="siteLink" target="_blank" rel="noopener">Հայերենի Քերականություն</a>
-  <a href="https://github.com/ninastan-artashes/modern-eastern-armenian-wordle" id="repoLink" target="_blank" rel="noopener" data-i18n="footer">Բառացանկը՝ հայերեն Վիքիպեդիայի կորպուսից</a>
-</footer>
 
 <!-- ── data + game ──────────────────────────────────────────────── -->
 <script>
@@ -860,12 +876,21 @@ const LENGTHS = Object.keys(POOLS).map(Number).sort((a,b)=>a-b);
 const TIERS = ["easy","medium","hard","impossible"];
 
 /* ---------- 2. Armenian grapheme handling ---------- */
-/* 38 letters + ու + և = 40 tiles. ու and և are single tiles. */
-const LETTERS = "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆ".split("");
-const KEYS = LETTERS.concat(["ու","և"]);
-const KEY_ORDER = KEYS.slice();
-const KB_ROWS = [];
-for (let i = 0; i < KEY_ORDER.length; i += 10) KB_ROWS.push(KEY_ORDER.slice(i, i+10));
+/* 38 letters + ու + և = 40 tiles. ու and և are single tiles.
+   Tiles follow the phonetic Armenian layout (Armenian Phonetic,
+   the default Armenian keyboard in Windows):
+   the number row carries the letters that lie on it physically,
+   then the letter row, the home row and the bottom row.
+   The «ու» ligature has no single key on the physical layout
+   (it is typed ո + ւ), so this game adds it at the end of the
+   bottom row. */
+const KB_ROWS = [
+  ["է","թ","փ","ձ","ջ","ւ","և","ր","չ","ճ","ժ"],   // number row: 1→է 2→թ 3→փ 4→ձ 5→ջ 6→ւ 7→և 8→ր 9→չ 0→ճ =→ժ
+  ["ք","ո","ե","ռ","տ","ը","ի","օ","պ","խ","ծ"],   // letter row: Ք Ո Ե Ռ Տ Ը Ի Օ Պ Խ Ծ
+  ["ա","ս","դ","ֆ","գ","հ","յ","կ","լ","շ"],       // home row: Ա Ս Դ Ֆ Գ Հ Յ Կ Լ Շ
+  ["զ","ղ","ց","վ","բ","ն","մ","ու"],                // bottom row: Զ Ղ Ց Վ Բ Ն Մ + ու
+];
+const KEYS = KB_ROWS.flat();
 
 const norm = (s) => s.toLowerCase().replace(/\u0565\u0582/g, "\u0587");  // «եւ»(2 chars) → և, lower-case first
 function toTiles(word){
@@ -937,7 +962,8 @@ const I18N = {
     storyHeadingPh:"Տիտղոս",
     storyBodyPh:"Գրիր այստեղ",
     storyCopy:"Պատճենել", storyClear:"Մաքրել", storyClearSure:"Իսկապե՞ս մաքրել",
-    storySaved:"Պահվեց ✓", storyWords:"բառ", storyChars:"նշան"
+    storySaved:"Պահվեց ✓", storyWords:"բառ", storyChars:"նշան",
+    linksTitle:"Հղումներ", aboutTitle:"Իմ մասին"
   },
   en: {
     title:"ԲԱՌԱԽԱՂ", subtitle:"Eastern Armenian",
@@ -967,7 +993,8 @@ const I18N = {
     storyHeadingPh:"Title",
     storyBodyPh:"Write here",
     storyCopy:"Copy", storyClear:"Clear", storyClearSure:"Really clear",
-    storySaved:"Saved ✓", storyWords:"words", storyChars:"characters"
+    storySaved:"Saved ✓", storyWords:"words", storyChars:"characters",
+    linksTitle:"Links", aboutTitle:"About me"
   }
 };
 let LANG = "hy";
@@ -1492,6 +1519,16 @@ function clearStory(){
   if (body) body.focus();
 }
 
+/* ---------- 13b. about me — a static block the site owner writes ---------- */
+/* The intro lives in the HTML itself (not localStorage), so it is written
+   by the author and shown to every visitor — visitors cannot edit it. */
+function renderAboutStatic(){
+  const box = $("#aboutStatic");
+  const section = $("#aboutMe");
+  if (!box || !section) return;
+  section.hidden = !box.textContent.trim();
+}
+
 /* ---------- 13. language / theme ---------- */
 function applyLang(){
   document.documentElement.lang = LANG === "en" ? "en" : "hy";
@@ -1505,6 +1542,7 @@ function applyLang(){
   if (notesBtn){ notesBtn.title = t("storyTitle"); notesBtn.setAttribute("aria-label", t("storyTitle")); }
   renderStoryMeta();
   renderStoryShow();
+  renderAboutStatic();
 }
 function applyTheme(){
   document.documentElement.dataset.theme = cfg.theme;
@@ -1529,7 +1567,7 @@ function renderCorpusInfo(){
 
 /* ---------- 15. wiring ---------- */
 function wire(){
-  $("#btnHelp").onclick = () => { renderCorpusInfo(); renderStoryShow(); openModal("#scrimHelp"); };
+  $("#btnHelp").onclick = () => { renderCorpusInfo(); renderStoryShow(); renderAboutStatic(); openModal("#scrimHelp"); };
   $("#btnStory").onclick = () => {
     loadStory();
     openModal("#scrimStory");
@@ -1611,9 +1649,9 @@ boot();
 
 /* debug / scripting hook — handy for tests, harmless in production */
 window.HYWORDLE = { S, cfg, POOLS, META, addLetter, backspace, submit, newGame, toTiles, evaluate,
-                    loadStory, saveStory, clearStory };
+                    loadStory, saveStory, clearStory, renderAboutStatic };
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5d9e3bf7fdd96',t:'MTc5NTMyODY2Ng=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5d9e3bf7fdd96',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
