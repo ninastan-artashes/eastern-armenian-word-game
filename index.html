@@ -28,8 +28,9 @@
   --accent:#8c2f39;             /* one accent, used sparingly */
   --accent-ink:#ffffff;
 
-  --correct:#3f7a55;            /* feedback is the only other colour */
-  --present:#b8863b;
+  --correct:#8e293b;            /* feedback is the only other colour */
+  --present:#c58a83;
+  --present-ink:#191714;        /* ink that sits on the present tile */
   --absent:#ddd8ce;
 
   --tile:clamp(48px, 6vw, 88px);
@@ -58,8 +59,9 @@ html[data-theme="dark"]{
   --accent:#c4676d;
   --accent-ink:#161514;
 
-  --correct:#4f8f66;
-  --present:#c09347;
+  --correct:#8e293b;
+  --present:#c58a83;
+  --present-ink:#161514;
   --absent:#393632;
 }
 
@@ -236,7 +238,7 @@ main{
 .tile.active{border-color:var(--text)}
 
 .tile.correct{background:var(--correct); border-color:var(--correct); color:#fff}
-.tile.present{background:var(--present); border-color:var(--present); color:#fff}
+.tile.present{background:var(--present); border-color:var(--present); color:var(--present-ink)}
 .tile.absent{background:var(--absent); border-color:var(--absent); color:var(--text)}
 
 .tile.flip{animation:flip .45s ease forwards}
@@ -296,7 +298,7 @@ button{touch-action:manipulation}
 .key:active{transform:translateY(1px)}
 
 .key.correct{background:var(--correct); border-color:var(--correct); color:#fff}
-.key.present{background:var(--present); border-color:var(--present); color:#fff}
+.key.present{background:var(--present); border-color:var(--present); color:var(--present-ink)}
 .key.absent{background:transparent; border-color:var(--line); color:var(--muted); opacity:.5}
 
 .key.wide{
@@ -778,8 +780,8 @@ button{touch-action:manipulation}
     <p data-i18n="rulesIntro">Գուշակիր թաքնված հայերեն բառը վեց փորձով։ Ամեն տող պետք է լինի նույն երկարության բառ։</p>
     <div class="ex"><i class="c">մ</i><i class="p">ա</i><i class="a">յ</i><i class="a">ր</i></div>
     <ul style="margin:0; padding-left:18px">
-      <li data-i18n="ruleCorrect">Կանաչ՝ տառը ճիշտ տեղում է։</li>
-      <li data-i18n="rulePresent">Դեղին՝ տառը բառի մեջ կա, բայց ուրիշ տեղում։</li>
+      <li data-i18n="ruleCorrect">Բորդո՝ տառը ճիշտ տեղում է։</li>
+      <li data-i18n="rulePresent">Վարդագույն՝ տառը բառի մեջ կա, բայց ուրիշ տեղում։</li>
       <li data-i18n="ruleAbsent">Մոխրագույն՝ տառը բառի մեջ չկա։</li>
       <li data-i18n="ruleDigraph">«ու» և «և» համարվում են մեկ տառ։</li>
     </ul>
@@ -956,8 +958,8 @@ const I18N = {
     hintDone:"Այսօրվա խաղն ավարտված է — փորձիր «Ազատ» ռեժիմը",
     howToPlay:"Ինչպես խաղալ",
     rulesIntro:"Գուշակիր թաքնված հայերեն բառը վեց փորձով։",
-    ruleCorrect:"Կանաչ՝ տառը ճիշտ տեղում է։",
-    rulePresent:"Դեղին՝ տառը բառի մեջ կա, բայց ուրիշ տեղում։",
+    ruleCorrect:"Բորդո՝ տառը ճիշտ տեղում է։",
+    rulePresent:"Վարդագույն՝ տառը բառի մեջ կա, բայց ուրիշ տեղում։",
     ruleAbsent:"Մոխրագույն՝ տառը բառի մեջ չկա։",
     ruleDigraph:"«ու» և «և» համարվում են մեկ տառ։",
     tierExplain:"Դժվարության աստիճանները որոշվում են բառի հանդիպման հաճախականությամբ՝ հայերեն Վիքիպեդիայի կորպուսում։",
@@ -987,8 +989,8 @@ const I18N = {
     hintDone:"Today's puzzle is finished — try Practice mode",
     howToPlay:"How to play",
     rulesIntro:"Guess the hidden Armenian word in six tries.",
-    ruleCorrect:"Green — right letter, right spot.",
-    rulePresent:"Yellow — the letter is in the word, elsewhere.",
+    ruleCorrect:"Burgundy — right letter, right spot.",
+    rulePresent:"Rose — the letter is in the word, elsewhere.",
     ruleAbsent:"Grey — the letter is not in the word.",
     ruleDigraph:"«ու» and «և» each count as one letter.",
     tierExplain:"Difficulty tiers are set by how often a word occurs in the Eastern Armenian Wikipedia corpus.",
@@ -1483,7 +1485,7 @@ function showResult(withModal){
   if (withModal) openModal("#scrimResult");
 }
 function shareText(){
-  const grid = S.guesses.map(g => g.eval.map(v => v === "correct" ? "🟩" : v === "present" ? "🟨" : "⬛").join("")).join("\n");
+  const grid = S.guesses.map(g => g.eval.map(v => v === "correct" ? "🟥" : v === "present" ? "🟧" : "⬛").join("")).join("\n");
   const head = `${t("shareTitle")} · ${cfg.len} ${LANG === "en" ? "letters" : "տառ"} · ${TIER_LABEL()[cfg.tier]}` +
     (cfg.mode === "daily" ? ` · #${puzzleNo()}` : "");
   return head + "\n" + grid + "\n" + location.href;
