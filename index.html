@@ -32,8 +32,8 @@
   --present:#b8863b;
   --absent:#ddd8ce;
 
-  --tile:clamp(48px, 6vw, 76px);
-  --gap:8px;
+  --tile:clamp(48px, 6vw, 88px);
+  --gap:4px;                    /* tight gutters — the tiles should read big */
   --radius:7px;
   --card:12px;
   --rail:270px;
@@ -183,7 +183,7 @@ main{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  padding:10px 6px 4px;
+  padding:6px 4px 2px;
   min-width:0; min-height:0;
   width:100%; height:100%;
   overflow:hidden;
@@ -195,7 +195,7 @@ main{
   grid-auto-rows:var(--tile);
   justify-content:center;
   justify-items:center;
-  padding:12px;
+  padding:8px;
 }
 
 .row{
@@ -247,8 +247,8 @@ main{
   grid-area:keyboard;
   display:flex;
   flex-direction:column;
-  gap:5px;
-  padding:12px;
+  gap:4px;
+  padding:10px;
   width:var(--kb-width);
   max-width:760px;
   margin:0 auto;
@@ -265,7 +265,7 @@ main{
 .key{
   flex:1 1 0;
   min-width:0;
-  height:clamp(40px,3.8vw,46px);
+  height:clamp(36px,3.4vw,42px);
   border:1px solid var(--line);
   border-radius:var(--radius);
   background:transparent;
@@ -317,6 +317,7 @@ main{
 
 /* small screens: single centred column (controls on top) */
 @media (max-width:860px){
+  :root{--gap:3px}
   .game-layout{
     display:flex;
     flex-direction:column;
@@ -350,20 +351,20 @@ main{
 
   main{flex:1 1 auto; width:100%; padding:2px}
 
-  .board{padding:10px}
+  .board{padding:6px}
 
   .keyboard{
     flex:0 0 auto;
     width:100%;
     max-width:600px;
-    padding:9px;
-    gap:5px;
+    padding:8px;
+    gap:4px;
   }
 
   .krow{gap:4px}
 
   .key{
-    height:clamp(38px,8vw,44px);
+    height:clamp(36px,8vw,42px);
     font-size:clamp(14px,3.4vw,16px);
   }
 
@@ -478,6 +479,59 @@ main{
 .switch input:checked + span{background:var(--accent)}
 .switch input:checked + span::after{transform:translateX(19px)}
 
+/* ── notes / story editor ─────────────────────────────────────────── */
+/* A blank sheet: no labels inside, ruled lines, the wordmark's own type. */
+#storyHeading{
+  width:100%; margin-top:2px;
+  border:0; border-bottom:1px solid var(--line);
+  background:transparent; color:var(--text);
+  font-family:inherit; font-size:16px; font-weight:600;
+  letter-spacing:.01em;
+  padding:2px 2px 10px; outline:none;
+  transition:border-color .15s;
+}
+#storyHeading::placeholder{color:var(--muted); font-weight:500; opacity:.75}
+#storyHeading:focus{border-bottom-color:var(--accent)}
+
+#storyBody{
+  display:block; width:100%;
+  min-height:220px; max-height:46dvh; resize:vertical;
+  margin-top:12px; padding:10px 12px;
+  font-family:inherit; font-size:13.5px; line-height:26px;
+  color:var(--text);
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(to bottom,
+    transparent 0 25px, var(--line) 25px 26px);
+  background-position:0 3px;
+  background-attachment:local;
+  border:1px solid var(--line); border-radius:var(--radius);
+  outline:none; overflow:auto;
+  transition:border-color .15s;
+  -webkit-user-select:text; user-select:text;
+}
+#storyBody::placeholder{color:var(--muted); opacity:.75}
+#storyBody:focus{border-color:var(--accent)}
+
+.storyfoot{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:10px; margin-top:8px;
+  font-size:10.5px; color:var(--muted); letter-spacing:.02em;
+  min-height:14px;
+}
+#storySaved{color:var(--accent); opacity:0; transition:opacity .25s}
+#storySaved.on{opacity:1}
+
+/* the same text, read-only, inside the help panel */
+.storyshow{margin-top:16px; padding-top:14px; border-top:1px solid var(--line)}
+.storyshow h3{
+  margin:0 0 6px; font-size:12px; font-weight:600;
+  letter-spacing:.08em; color:var(--text);
+}
+.storyshow p{
+  margin:0; font-size:12.5px; line-height:1.75;
+  color:var(--muted); white-space:pre-wrap;
+}
+
 .answerword{
   font-size:26px; font-weight:600; letter-spacing:.08em;
   text-align:center; margin:14px 0 2px; word-break:break-all;
@@ -505,10 +559,10 @@ footer a:hover{color:var(--accent)}
 /* ── short viewports: trim chrome instead of shrinking the board ──── */
 @media (max-height:700px){
   header{padding:9px 16px}
-  .keyboard{gap:4px; padding:9px}
-  .key{height:clamp(34px,4.4vw,42px)}
-  main{padding:4px 4px 2px}
-  .board{padding:10px}
+  .keyboard{gap:4px; padding:8px}
+  .key{height:clamp(31px,4.2vw,38px)}
+  main{padding:2px 4px 2px}
+  .board{padding:6px}
   .controls{gap:10px; padding:12px}
   .brand small{font-size:8.5px}
   footer{padding:0 8px 6px}
@@ -574,14 +628,14 @@ footer a:hover{color:var(--accent)}
     justify-content:center;
   }
 
-  .board{padding:8px; border-radius:10px}
+  .board{padding:6px; border-radius:10px}
 
   /* five equal rows stretched to the board's height */
   .keyboard{
     width:100%;
     height:100%;
-    padding:8px;
-    gap:4px;
+    padding:6px;
+    gap:3px;
     border-radius:10px;
     justify-content:center;
     display:grid;
@@ -594,6 +648,20 @@ footer a:hover{color:var(--accent)}
   .key.wide{flex:0 0 54px; font-size:8px; letter-spacing:.08em}
 
   footer{display:none}
+}
+
+/* ── phones: keep the strapline on ONE line ────────────────────────
+   The notes button adds a second header tool, which squeezes the brand
+   column until the subtitle wraps — and a wrapped subtitle makes the header
+   ~10px taller, stealing exactly the row of height the board was given. */
+@media (max-width:470px){
+  header{padding:11px 12px; gap:4px}
+  .iconbtn{width:31px; height:31px; font-size:13px}
+  .brand small{font-size:8px; letter-spacing:.1em; text-indent:.1em; white-space:nowrap}
+}
+
+@media (max-width:350px){
+  .brand small{display:none}
 }
 
 @media (max-width:360px){
@@ -621,7 +689,7 @@ footer a:hover{color:var(--accent)}
   .board{padding:4px; border-radius:8px}
   main{padding:0}
   .keyboard{padding:5px; gap:3px; border-radius:8px}
-  .key{height:clamp(28px,6.6vw,36px); border-radius:4px}
+  .key{height:clamp(26px,6vw,34px); border-radius:4px}
   .krow{gap:3px}
   #segLen, #segMode, #segTier{grid-column:auto; grid-row:auto}
   .seg{width:auto; border-bottom:0; padding-bottom:0}
@@ -638,6 +706,7 @@ footer a:hover{color:var(--accent)}
 
 <header>
   <div class="header-tools">
+    <button class="iconbtn" id="btnStory" aria-label="Notes" title="Notes">✎</button>
     <button class="iconbtn" id="btnHelp" aria-label="Help">?</button>
   </div>
   <div class="brand">
@@ -686,7 +755,26 @@ footer a:hover{color:var(--accent)}
       <li data-i18n="ruleDigraph">«ու» և «և» համարվում են մեկ տառ։</li>
     </ul>
     <p class="muted" data-i18n="tierExplain" style="margin-top:12px"></p>
+    <div class="storyshow" id="storyShow" hidden></div>
     <div class="corpus" id="corpusInfo"></div>
+  </div>
+</div>
+
+<!-- notes / story: a free sheet to write in, kept on this device -->
+<div class="scrim" id="scrimStory">
+  <div class="modal">
+    <h2><span data-i18n="storyTitle">Խաղի մասին</span><button data-close>✕</button></h2>
+    <p class="muted" data-i18n="storyIntro" style="margin:0 0 14px"></p>
+    <input id="storyHeading" type="text" maxlength="90" autocomplete="off" spellcheck="true">
+    <textarea id="storyBody" spellcheck="true"></textarea>
+    <div class="storyfoot">
+      <span id="storyCount"></span>
+      <span id="storySaved" aria-live="polite"></span>
+    </div>
+    <div class="btnrow">
+      <button class="btn alt" id="btnStoryCopy" data-i18n="storyCopy">Պատճենել</button>
+      <button class="btn ghost" id="btnStoryClear" data-i18n="storyClear">Մաքրել</button>
+    </div>
   </div>
 </div>
 
@@ -838,7 +926,13 @@ const I18N = {
     won:"Հաղթեցիր՜", lost:"Այս անգամ չստացվեց", wordWas:"Բառը՝",
     short:"Քիչ տառեր", unknown:"Բառը բառարանում չկա", copied:"Պատճենվեց ✓",
     notEnough:"Այս երկարության բառեր չկան", footer:"Բառացանկը՝ հայերեն Վիքիպեդիայի կորպուսից",
-    shareTitle:"Բառախաղ"
+    shareTitle:"Բառախաղ",
+    storyTitle:"Խաղի մասին",
+    storyIntro:"Ազատ տերև՝ խաղի նկարագրության և պատմության համար։ Գրիր այստեղ՝ տեքստը ինքնաշխատ պահվում է այս սարքում։",
+    storyHeadingPh:"Վերնագիր — օր․՝ ինչպես սկսվեց Բառախաղը",
+    storyBodyPh:"Գրիր այստեղ․ ինչու՞ ստեղծվեց խաղը, որտեղի՞ց է բառացանկը, ի՞նչն է ոգեշնչել…",
+    storyCopy:"Պատճենել", storyClear:"Մաքրել", storyClearSure:"Իսկապե՞ս մաքրել",
+    storySaved:"Պահվեց ✓", storyWords:"բառ", storyChars:"նշան"
   },
   en: {
     title:"ԲԱՌԱԽԱՂ", subtitle:"Eastern Armenian · 4 · 5 · 6 letters",
@@ -862,7 +956,13 @@ const I18N = {
     won:"You got it!", lost:"Better luck next time", wordWas:"The word was",
     short:"Not enough letters", unknown:"Not in dictionary", copied:"Copied ✓",
     notEnough:"No words of this length", footer:"Word list derived from the Armenian Wikipedia corpus",
-    shareTitle:"Wordle HY"
+    shareTitle:"Wordle HY",
+    storyTitle:"About the game",
+    storyIntro:"A free sheet for the game\u2019s description and its story. Type here — the text is saved automatically on this device.",
+    storyHeadingPh:"Title — e.g. how Բառախաղ began",
+    storyBodyPh:"Write here: why the game exists, where the word list comes from, what inspired it…",
+    storyCopy:"Copy", storyClear:"Clear", storyClearSure:"Really clear",
+    storySaved:"Saved ✓", storyWords:"words", storyChars:"characters"
   }
 };
 let LANG = "hy";
@@ -955,7 +1055,9 @@ function sizeBoard(){
 
 /* returns true when the measured result is stable / good enough */
 function measureAndApplyTile(){
-  const gapPx  = 8;
+  /* Gutters are deliberately tight so the squares can grow. Kept in sync with
+     the --gap token (3px on narrow screens, 4px above 860px). */
+  const gapPx  = window.innerWidth <= 860 ? 3 : 4;
   const kb     = $("#keyboard");
   const header = $("header");
   const footer = $("footer");
@@ -966,8 +1068,9 @@ function measureAndApplyTile(){
 
   const boxPadX = bcs ? parseFloat(bcs.paddingLeft) * 2 + parseFloat(bcs.borderLeftWidth) * 2 : 26;
   const boxPadY = bcs ? parseFloat(bcs.paddingTop) * 2 + parseFloat(bcs.borderTopWidth) * 2 : 26;
-  /* the gap between rows comes from CSS, not a hard-coded 8px */
-  const rowGap = (bcs && parseFloat(bcs.rowGap)) || gapPx;
+  /* the row gap is the same token we budget for — never read it back from the
+     computed style, or the inline --gap set below feeds a stale value in */
+  const rowGap = gapPx;
   const lblPadY = (lcs ? parseFloat(lcs.paddingTop) + parseFloat(lcs.paddingBottom) : 12)
                 + (lcs ? parseFloat(lcs.rowGap) || 0 : 0);
   const lblPadX = (lcs ? parseFloat(lcs.paddingLeft) + parseFloat(lcs.paddingRight) : 32)
@@ -1040,9 +1143,9 @@ function measureAndApplyTile(){
      five-row keyboard, so the floor drops for very small viewports —
      an overflowed board is worse than small squares. */
   const floor = window.innerHeight < 620 ? 18 : 24;
-  const size = Math.max(floor, Math.min(88, Math.floor(Math.min(byW, byH))));
+  const size = Math.max(floor, Math.min(96, Math.floor(Math.min(byW, byH))));
   document.documentElement.style.setProperty("--tile", size + "px");
-  document.documentElement.style.setProperty("--gap", (size >= 56 ? 8 : 6) + "px");
+  document.documentElement.style.setProperty("--gap", gapPx + "px");
 
   /* after applying, check the board actually fits its row */
   const mainEl2 = $("main");
@@ -1304,11 +1407,85 @@ async function share(){
 
 /* ---------- 12. modals ---------- */
 function openModal(sel){ $(sel).classList.add("open"); }
-function closeModals(){ $$(".scrim").forEach(s => s.classList.remove("open")); }
+function closeModals(){
+  /* a half-typed note must not be lost when the sheet is dismissed */
+  if ($("#scrimStory") && $("#scrimStory").classList.contains("open")) saveStory();
+  $$(".scrim").forEach(s => s.classList.remove("open"));
+}
 $$(".scrim").forEach(s => {
   s.addEventListener("click", (e) => { if (e.target === s || e.target.hasAttribute("data-close")) closeModals(); });
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModals(); });
+
+/* ---------- 13a. notes / story sheet ---------- */
+/* Everything lives in localStorage under hywordle:story, so a visitor's own
+   text never leaves the device. The same text is mirrored, read-only, into
+   the help panel — the notes double as the public "about" copy. */
+const storyEls = () => ({ head: $("#storyHeading"), body: $("#storyBody"), box: $("#storyShow") });
+
+function loadStory(){
+  const s = store("story") || {};
+  const { head, body } = storyEls();
+  if (head) head.value = s.heading || "";
+  if (body) body.value = s.body || "";
+  renderStoryMeta();
+  renderStoryShow();
+}
+
+function saveStory(){
+  const { head, body } = storyEls();
+  if (!head || !body) return;
+  store("story", { heading: head.value, body: body.value, updated: Date.now() });
+  renderStoryMeta();
+  renderStoryShow();
+  const badge = $("#storySaved");
+  if (badge){
+    badge.textContent = t("storySaved");
+    badge.classList.add("on");
+    clearTimeout(saveStory._t);
+    saveStory._t = setTimeout(() => badge.classList.remove("on"), 1600);
+  }
+}
+
+function renderStoryMeta(){
+  const { head, body } = storyEls();
+  const count = $("#storyCount");
+  if (!body || !count) return;
+  const text = body.value.trim();
+  const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+  count.textContent = words + " " + t("storyWords") + " · " + text.length + " " + t("storyChars");
+  if (head) head.placeholder = t("storyHeadingPh");
+  if (body) body.placeholder = t("storyBodyPh");
+}
+
+/* mirrored, read-only copy shown at the bottom of the help panel */
+function renderStoryShow(){
+  const { box } = storyEls();
+  if (!box) return;
+  const s = store("story") || {};
+  const heading = (s.heading || "").trim();
+  const body = (s.body || "").trim();
+  box.innerHTML = "";
+  if (!heading && !body){ box.hidden = true; return; }
+  box.hidden = false;
+  const h = document.createElement("h3");
+  h.textContent = heading || t("storyTitle");
+  box.appendChild(h);
+  if (body){
+    const p = document.createElement("p");
+    p.textContent = body;
+    box.appendChild(p);
+  }
+}
+
+function clearStory(){
+  const { head, body } = storyEls();
+  if (head) head.value = "";
+  if (body) body.value = "";
+  saveStory();
+  renderStoryMeta();
+  if (body) body.focus();
+}
 
 /* ---------- 13. language / theme ---------- */
 function applyLang(){
@@ -1319,6 +1496,10 @@ function applyLang(){
   buildKeyboard();
   paintKeyboard(keyboardState());
   refreshControls();
+  const notesBtn = $("#btnStory");
+  if (notesBtn){ notesBtn.title = t("storyTitle"); notesBtn.setAttribute("aria-label", t("storyTitle")); }
+  renderStoryMeta();
+  renderStoryShow();
 }
 function applyTheme(){
   document.documentElement.dataset.theme = cfg.theme;
@@ -1343,7 +1524,52 @@ function renderCorpusInfo(){
 
 /* ---------- 15. wiring ---------- */
 function wire(){
-  $("#btnHelp").onclick = () => { renderCorpusInfo(); openModal("#scrimHelp"); };
+  $("#btnHelp").onclick = () => { renderCorpusInfo(); renderStoryShow(); openModal("#scrimHelp"); };
+  $("#btnStory").onclick = () => {
+    loadStory();
+    openModal("#scrimStory");
+    setTimeout(() => $("#storyHeading").focus(), 60);
+  };
+  /* autosave: debounce while typing, flush on blur / close */
+  let storyTimer = null;
+  ["#storyHeading", "#storyBody"].forEach(sel => {
+    const el = $(sel);
+    el.addEventListener("input", () => {
+      renderStoryMeta();
+      clearTimeout(storyTimer);
+      storyTimer = setTimeout(saveStory, 450);
+    });
+    el.addEventListener("blur", () => { clearTimeout(storyTimer); saveStory(); });
+  });
+  $("#btnStoryCopy").onclick = async () => {
+    const { head, body } = storyEls();
+    const text = [head.value.trim(), body.value.trim()].filter(Boolean).join("\n\n");
+    if (!text) return;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast(t("copied"));
+    }catch(e){
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); showToast(t("copied")); }catch(_){}
+      ta.remove();
+    }
+  };
+  /* two-step clear — no browser confirm() dialog */
+  let clearArmedUntil = 0;
+  $("#btnStoryClear").onclick = () => {
+    const btn = $("#btnStoryClear");
+    if (Date.now() > clearArmedUntil){
+      clearArmedUntil = Date.now() + 2600;
+      btn.textContent = t("storyClearSure");
+      setTimeout(() => { btn.textContent = t("storyClear"); clearArmedUntil = 0; }, 2600);
+      return;
+    }
+    clearArmedUntil = 0;
+    btn.textContent = t("storyClear");
+    clearStory();
+    showToast(t("storySaved"));
+  };
   $("#btnStats").onclick = () => { renderStats(); openModal("#scrimStats"); };
   $("#btnSettings").onclick = () => { renderCorpusInfo(); openModal("#scrimSettings"); };
   $("#btnNewGame").onclick = () => { closeModals(); newGame(); };
@@ -1373,12 +1599,14 @@ function boot(){
   $("#setLang").value = LANG;
   renderCorpusInfo();
   wire();
+  loadStory();
   newGame();
 }
 boot();
 
 /* debug / scripting hook — handy for tests, harmless in production */
-window.HYWORDLE = { S, cfg, POOLS, META, addLetter, backspace, submit, newGame, toTiles, evaluate };
+window.HYWORDLE = { S, cfg, POOLS, META, addLetter, backspace, submit, newGame, toTiles, evaluate,
+                    loadStory, saveStory, clearStory };
 
 </script>
 
