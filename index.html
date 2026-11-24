@@ -97,20 +97,14 @@ header{
 }
 .header-tools{display:flex; gap:4px}
 
-/* wordmark: wide, light, all-caps — the one flourish on the page */
-.brand{display:flex; flex-direction:column; align-items:center; line-height:1.15}
+/* wordmark: wide, bold, all-caps — the one flourish on the page */
+.brand{display:flex; flex-direction:column; align-items:center; line-height:1.1}
 .brand b{
-  font-size:clamp(15px,3.6vw,19px);
+  font-size:clamp(20px,4.8vw,28px);
   font-weight:600;
-  letter-spacing:.34em;
-  text-indent:.34em;            /* compensate trailing letter-spacing */
+  letter-spacing:.26em;
+  text-indent:.26em;            /* compensate trailing letter-spacing */
   color:var(--text);
-}
-.brand small{
-  font-size:9px; font-weight:500;
-  letter-spacing:.18em; text-indent:.18em;
-  color:var(--muted);
-  margin-top:5px;
 }
 
 .iconbtn{
@@ -610,14 +604,12 @@ button{touch-action:manipulation}
   main{padding:2px 4px 2px}
   .board{padding:6px}
   .controls{gap:10px; padding:12px}
-  .brand small{font-size:8.5px}
 }
 
 /* ── phones held sideways: board and keyboard side by side ────────── */
 @media (max-height:560px) and (orientation:landscape){
   header{padding:6px 12px}
-  .brand b{font-size:13px; letter-spacing:.26em; text-indent:.26em}
-  .brand small{display:none}
+  .brand b{font-size:16px; letter-spacing:.22em; text-indent:.22em}
   .iconbtn{width:28px; height:28px; font-size:12px}
 
   .game-layout{
@@ -692,22 +684,14 @@ button{touch-action:manipulation}
   .key.wide{font-size:8px; letter-spacing:.08em}
 }
 
-/* ── phones: keep the strapline on ONE line ────────────────────────
-   The notes button adds a second header tool, which squeezes the brand
-   column until the subtitle wraps — and a wrapped subtitle makes the header
-   ~10px taller, stealing exactly the row of height the board was given. */
+/* ── phones: compact header spacing ──────────────────────────────── */
 @media (max-width:470px){
   header{padding:11px 12px; gap:4px}
   .iconbtn{width:31px; height:31px; font-size:13px}
-  .brand small{font-size:8px; letter-spacing:.1em; text-indent:.1em; white-space:nowrap}
-}
-
-@media (max-width:350px){
-  .brand small{display:none}
 }
 
 @media (max-width:360px){
-  .brand b{font-size:13.5px; letter-spacing:.22em; text-indent:.22em}
+  .brand b{font-size:17px; letter-spacing:.18em; text-indent:.18em}
   .seg button{padding:5px 6px; font-size:10.5px}
   .seg.tiers button{padding:5px 4px; font-size:10px}
 }
@@ -740,7 +724,6 @@ button{touch-action:manipulation}
   .seg.tiers button{font-size:10px; padding:4px 5px}
   .hintline{display:none}
   header{padding:6px 10px}
-  .brand small{display:none}
 }
 
 </style>
@@ -755,7 +738,6 @@ button{touch-action:manipulation}
   </div>
   <div class="brand">
     <b data-i18n="title">ԲԱՌԱԽԱՂ</b>
-    <small data-i18n="subtitle">արևելահայերեն</small>
   </div>
   <div class="header-tools">
     <button class="iconbtn" id="btnStats" aria-label="Stats">▤</button>
@@ -798,7 +780,7 @@ button{touch-action:manipulation}
       <li data-i18n="ruleAbsent">Մոխրագույն՝ տառը բառի մեջ չկա։</li>
       <li data-i18n="ruleDigraph">«ու» և «և» համարվում են մեկ տառ։</li>
     </ul>
-    <p data-i18n="tierExplain" style="margin-top:12px"></p>
+    <p class="muted" data-i18n="tierExplain" style="margin-top:12px"></p>
     <div class="storyshow" id="storyShow" hidden></div>
     <div class="corpus" id="corpusInfo"></div>
     <div class="helplinks" id="helpLinks">
@@ -967,7 +949,7 @@ const puzzleNo = () => Math.floor((Date.now() - new Date(2026,0,1).getTime()) / 
 /* ---------- 4. i18n ---------- */
 const I18N = {
   hy: {
-    title:"ԲԱՌԱԽԱՂ", subtitle:"արևելահայերեն",
+    title:"ԲԱՌԱԽԱՂ",
     easy:"Դյուրին", medium:"Միջին", hard:"Դժվար", lm:"ԼՄ", impossible:"Անհնար",
     daily:"Այսօրվա", practice:"Ազատ",
     hintDaily:"Օրվա բառը՝ նույնը բոլորի համար", hintPractice:"Անվերջ խաղ",
@@ -998,7 +980,7 @@ const I18N = {
     linksTitle:"Հղումներ", explorerLink:"Բառախույզ", aboutTitle:"Իմ մասին"
   },
   en: {
-    title:"ԲԱՌԱԽԱՂ", subtitle:"Eastern Armenian",
+    title:"ԲԱՌԱԽԱՂ",
     easy:"Easy", medium:"Medium", hard:"Hard", lm:"LM", impossible:"Impossible",
     daily:"Daily", practice:"Practice",
     hintDaily:"Everyone gets the same word today", hintPractice:"Endless words",
@@ -1751,5 +1733,5 @@ window.HYWORDLE = { S, cfg, POOLS, TIERS, META, poolFor, dictFor, addLetter, bac
 
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5fd7b3f74314c',t:'MTc5NTMzMDEyNA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5fd7b3f74314c',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f74ecf3f02319f',t:'MTc5NTUxMTcxMw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f74ecf3f02319f',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e026072a4886b4',t:'MTc5NTI2ODg3MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e026072a4886b4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5e5fd7b3f74314c',t:'MTc5NTMzMDEyNA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5e5fd7b3f74314c',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f778006de67a2c',t:'MTc5NTUxMzQwMA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f778006de67a2c',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
