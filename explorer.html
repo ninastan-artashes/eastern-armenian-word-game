@@ -86,19 +86,13 @@ header{
 }
 .header-tools{display:flex; gap:4px; align-items:center}
 
-.brand{display:flex; flex-direction:column; align-items:center; line-height:1.15; text-decoration:none}
+.brand{display:flex; flex-direction:column; align-items:center; line-height:1.1; text-decoration:none}
 .brand b{
-  font-size:clamp(14px,3.4vw,18px);
+  font-size:clamp(20px,4.8vw,28px);
   font-weight:600;
-  letter-spacing:.30em;
-  text-indent:.30em;
+  letter-spacing:.26em;
+  text-indent:.26em;
   color:var(--text);
-}
-.brand small{
-  font-size:9px; font-weight:500;
-  letter-spacing:.16em; text-indent:.16em;
-  color:var(--muted);
-  margin-top:4px;
 }
 
 .iconbtn{
@@ -136,12 +130,12 @@ header{
 
 /* ── left filter panel ────────────────────────────────────────────── */
 .filters{
-  padding:18px 16px;
+  padding:16px;
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:14px;
   position:sticky;
-  top:76px;
+  top:74px;
 }
 
 .section{display:flex; flex-direction:column; gap:7px}
@@ -600,6 +594,7 @@ header{
 }
 @media (max-width:440px){
   header{padding:10px 12px}
+  .brand b{font-size:17px; letter-spacing:.18em; text-indent:.18em}
   .iconbtn .lbl{display:none}
   .slot-exact{font-size:18px}
   .key{height:30px; font-size:12.5px}
@@ -615,7 +610,6 @@ header{
   </div>
   <div class="brand">
     <b data-i18n="title">ԲԱՌԱԽՈՒՅԶ</b>
-    <small data-i18n="subtitle">բառերի որոնիչ · արևելահայերեն</small>
   </div>
   <div class="header-tools">
     <button class="iconbtn" id="btnLang" title="Language">EN</button>
@@ -628,35 +622,24 @@ header{
   <aside class="panel filters" aria-label="Filters">
 
     <div class="section">
-      <div class="section-head">
-        <span class="label" data-i18n="lblLength">Երկարություն</span>
-        <span class="muted" id="lenInfo" style="font-size:10.5px"></span>
-      </div>
-      <div class="seg" id="segLen" role="group"></div>
+      <div class="seg" id="segLen" role="group" aria-label="Length"></div>
     </div>
 
     <div class="section">
-      <div class="section-head">
-        <span class="label" data-i18n="lblTier">Մակարդակ</span>
-      </div>
-      <div class="seg tiers" id="segTier" role="group"></div>
+      <div class="seg tiers" id="segTier" role="group" aria-label="Tier"></div>
     </div>
 
     <div class="section">
-      <div class="section-head">
-        <span class="label" data-i18n="lblPositions">Տառերի դիրքերը</span>
-        <button class="mini-act" id="btnClearPos" data-i18n="clear">Մաքրել</button>
-      </div>
       <div class="slots-grid" id="slotsGrid"></div>
       <label class="yellow-toggle">
         <input type="checkbox" id="chkYellow">
-        <span data-i18n="yellowRule">«≠» տառերը պարտադիր կան բառի մեջ (Wordle կանոն)</span>
+        <span data-i18n="yellowRule">«≠» տառերը կան բառում</span>
       </label>
     </div>
 
     <div class="section">
       <div class="section-head">
-        <span class="label" data-i18n="lblContains">Պարունակում է (ցանկացած տեղում)</span>
+        <span class="label" data-i18n="lblContains">Պարունակում է</span>
         <button class="mini-act" id="btnClearContains" data-i18n="clear">Մաքրել</button>
       </div>
       <div class="chip-field" id="fieldContains" tabindex="0" role="textbox"></div>
@@ -664,7 +647,7 @@ header{
 
     <div class="section">
       <div class="section-head">
-        <span class="label" data-i18n="lblExclude">Բացառել տառերը</span>
+        <span class="label" data-i18n="lblExclude">Բացառել</span>
         <button class="mini-act" id="btnClearExclude" data-i18n="clear">Մաքրել</button>
       </div>
       <div class="chip-field" id="fieldExclude" tabindex="0" role="textbox"></div>
@@ -680,7 +663,6 @@ header{
 
     <div class="action-row">
       <button class="btn" id="btnReset" data-i18n="resetAll">Մաքրել բոլորը</button>
-      <button class="btn" id="btnExample" data-i18n="tryExample">Օրինակ</button>
     </div>
 
   </aside>
@@ -816,21 +798,19 @@ LENGTHS.forEach(L => {
 /* ---------- 3. i18n ---------- */
 const I18N = {
   hy: {
-    title:"ԲԱՌԱԽՈՒՅԶ", subtitle:"բառերի որոնիչ · արևելահայերեն",
+    title:"ԲԱՌԱԽՈՒՅԶ",
     gameLink:"Խաղ",
-    lblLength:"Երկարություն", lblTier:"Մակարդակ",
-    lblPositions:"Տառերի դիրքերը",
-    lblContains:"Պարունակում է (ցանկացած տեղում)",
-    lblExclude:"Բացառել տառերը",
+    lblContains:"Պարունակում է",
+    lblExclude:"Բացառել",
     all:"Բոլորը", allLen:"4–6",
     easy:"Դյուրին", medium:"Միջին", hard:"Դժվար", lm:"ԼՄ", impossible:"Անհնար",
-    clear:"Մաքրել", resetAll:"Մաքրել բոլորը", tryExample:"Օրինակ",
-    yellowRule:"«≠» տառերը պարտադիր կան բառի մեջ (Wordle կանոն)",
-    phContains:"Սեղմիր և գրիր տառեր (օր.՝ ա, ր, ու)…",
-    phExclude:"Սեղմիր և գրիր բացառվող տառեր…",
+    clear:"Մաքրել", resetAll:"Մաքրել բոլորը",
+    yellowRule:"«≠» տառերը կան բառում",
+    phContains:"Գրիր տառեր…",
+    phExclude:"Գրիր տառեր…",
     kbHide:"Թաքցնել ստեղնաշարը", kbShow:"Ստեղնաշար",
-    tgtExact:"Մուտքագրում՝ դիրք ", tgtNotAt:"Բացառել դիրք ",
-    tgtContains:"Մուտքագրում՝ «Պարունակում է»", tgtExclude:"Մուտքագրում՝ «Բացառել»",
+    tgtExact:"Դիրք ", tgtNotAt:"≠ Դիրք ",
+    tgtContains:"Պարունակում է", tgtExclude:"Բացառել",
     sortFreq:"Հաճախականությամբ", sortAlpha:"Այբբենական",
     copyList:"Պատճենել", copyWord:"Պատճենել բառը", definition:"Բացատրություն",
     copied:"Պատճենվեց ✓",
@@ -844,29 +824,27 @@ const I18N = {
     inLM:"ներառված է ԼՄ-ում", notInLM:"միայն Անհնարում",
     helpTitle:"Ինչպես օգտվել",
     helpIntro:"Որոնիր արևելահայերեն բառեր՝ ըստ երկարության, կոնկրետ դիրքերում գտնվող տառերի, ներառված կամ բացառված տառերի և դժվարության մակարդակի։",
-    helpPos:"Վերին վանդակներում նշիր հստակ դիրքում գտնվող տառը (օր.՝ 5 տառ՝ 1-ինը «մ», 4-րդը «ա», 5-րդը «ն»)։ Կարող ես նաև տեղադրել օրինակ՝ մ__ան։",
+    helpPos:"Վերին վանդակներում նշիր հստակ դիրքում գտնվող տառը։ Կարող ես նաև տեղադրել ձևանմուշ՝ մ__ան։",
     helpNotAt:"Ամեն վանդակի տակ գտնվող «≠» դաշտում նշիր այն տառերը, որոնք չեն կարող լինել տվյալ դիրքում։",
-    helpContains:"«Պարունակում է» դաշտի տառերը պետք է լինեն բառի ցանկացած դիրքում (կրկնվող տառը պահանջում է նույնքան կրկնություն)։",
+    helpContains:"«Պարունակում է» դաշտի տառերը պետք է լինեն բառի մեջ (կրկնվող տառը պահանջում է նույնքան կրկնություն)։",
     helpExclude:"«Բացառել» դաշտի տառերը չեն կարող հանդիպել բառում (եթե նույն տառը նաև նշված է որպես պարտադիր, բացառվում են միայն ավելորդ կրկնությունները)։",
     helpDigraph:"«ու» և «և» տառերը հաշվվում են որպես մեկ դիրք (ո + ւ → ու, ե + ւ → և)։",
     helpTiers:"«ԼՄ» մակարդակը միավորում է դյուրին, միջին և դժվար բառացանկերը։ Ոչ ստանդարտ բառերը գտնվում են «Անհնար» բաժնում։"
   },
   en: {
-    title:"ԲԱՌԱԽՈՒՅԶ", subtitle:"word explorer · Eastern Armenian",
+    title:"ԲԱՌԱԽՈՒՅԶ",
     gameLink:"Game",
-    lblLength:"Length", lblTier:"Difficulty tier",
-    lblPositions:"Letters by position",
-    lblContains:"Contains anywhere",
-    lblExclude:"Exclude letters",
+    lblContains:"Contains",
+    lblExclude:"Exclude",
     all:"All", allLen:"4–6",
     easy:"Easy", medium:"Medium", hard:"Hard", lm:"LM", impossible:"Impossible",
-    clear:"Clear", resetAll:"Clear all", tryExample:"Example",
-    yellowRule:"Require «≠» letters somewhere in the word (Wordle yellow rule)",
-    phContains:"Click and type letters (e.g. ա, ր, ու)…",
-    phExclude:"Click and type excluded letters…",
+    clear:"Clear", resetAll:"Clear all",
+    yellowRule:"«≠» letters are in the word",
+    phContains:"Type letters…",
+    phExclude:"Type letters…",
     kbHide:"Hide keyboard", kbShow:"Show keyboard",
-    tgtExact:"Typing into Position ", tgtNotAt:"Not at Position ",
-    tgtContains:"Typing into Contains anywhere", tgtExclude:"Typing into Exclude letters",
+    tgtExact:"Position ", tgtNotAt:"≠ Position ",
+    tgtContains:"Contains", tgtExclude:"Exclude",
     sortFreq:"By frequency", sortAlpha:"Alphabetical",
     copyList:"Copy list", copyWord:"Copy word", definition:"Wiktionary",
     copied:"Copied ✓",
@@ -880,10 +858,10 @@ const I18N = {
     inLM:"included in LM", notInLM:"Impossible only",
     helpTitle:"How to use Word Explorer",
     helpIntro:"Search the Eastern Armenian game vocabulary by word length, exact letter positions, positional exclusions, included or excluded letters, and difficulty tier.",
-    helpPos:"Fill the top tile boxes with exact letters at each position (e.g. 5 letters with մ in 1st, ա in 4th, ն in 5th). You can also paste patterns like մ__ան.",
+    helpPos:"Fill the top tile boxes with exact letters at each position. You can also paste patterns like մ__ան.",
     helpNotAt:"Use the «≠» box beneath any position to forbid specific letters from appearing in that slot.",
-    helpContains:"Letters in «Contains anywhere» must appear somewhere in the word (adding a letter twice requires at least two occurrences).",
-    helpExclude:"Letters in «Exclude letters» cannot appear in the word (if a letter is also required above, extra occurrences beyond the required count are excluded).",
+    helpContains:"Letters in «Contains» must appear somewhere in the word (adding a letter twice requires at least two occurrences).",
+    helpExclude:"Letters in «Exclude» cannot appear in the word (if a letter is also required above, extra occurrences beyond the required count are excluded).",
     helpDigraph:"«ու» and «և» each count as a single tile (typing ո + ւ merges into ու; ե + ւ merges into և).",
     helpTiers:"LM combines the Easy, Medium, and Hard lists, while non-standard words are placed in Impossible."
   }
@@ -1154,8 +1132,6 @@ function renderControls(){
   segLen.innerHTML = lenOpts.map(L =>
     `<button data-len="${L}" aria-pressed="${L === state.len}">${L === 0 ? t("allLen") : L}</button>`
   ).join("");
-  const totalForLen = (state.len === 0 ? ALL_ENTRIES : ENTRIES_BY_LEN[state.len]).length;
-  $("#lenInfo").textContent = totalForLen.toLocaleString("en-US") + " " + t("wordsUnit");
 
   const segTier = $("#segTier");
   segTier.innerHTML = TIER_FILTERS.map(tr =>
@@ -1459,23 +1435,6 @@ function resetAll(){
   runSearch();
 }
 
-function applyExample(){
-  // Crisp real Armenian example: 5-letter words with մ at 1st, ա at 4th, ն at 5th (մ _ _ ա ն)
-  state.len = 5;
-  state.tier = "all";
-  state.exact = ["մ","","","ա","ն",""];
-  state.notAt = Array.from({length: MAX_LEN}, () => []);
-  state.contains = [];
-  state.exclude = [];
-  state.yellowRule = false;
-  $("#chkYellow").checked = false;
-  state.target = { type: "exact", idx: 1 };
-  state.limit = 240;
-  renderControls();
-  renderFilterUI();
-  runSearch();
-}
-
 /* ---------- 8. Wiring ---------- */
 function closeModals(){ $$(".scrim").forEach(s => s.classList.remove("open")); }
 
@@ -1569,13 +1528,6 @@ function wire(){
     setTarget({ type: "exclude" });
   };
 
-  $("#btnClearPos").onclick = () => {
-    state.exact.fill("");
-    state.notAt = Array.from({length: MAX_LEN}, () => []);
-    state.limit = 240;
-    setTarget({ type: "exact", idx: 0 });
-    runSearch();
-  };
   $("#btnClearContains").onclick = () => {
     state.contains = [];
     state.limit = 240;
@@ -1601,7 +1553,6 @@ function wire(){
   };
 
   $("#btnReset").onclick = resetAll;
-  $("#btnExample").onclick = applyExample;
 
   $("#selSort").onchange = (e) => {
     state.sort = e.target.value;
@@ -1695,8 +1646,8 @@ boot();
 window.HYEXPLORER = {
   state, ALL_ENTRIES, ENTRIES_BY_LEN, toTiles, compareArmenian,
   matchesConstraints, runSearch, handleLetterInput, handleBackspace,
-  handleWildcard, handlePastePattern, setTarget, resetAll, applyExample
+  handleWildcard, handlePastePattern, setTarget, resetAll
 };
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f746bda9ebd2a7',t:'MTc5NTUxMTM4Mg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f746bda9ebd2a7',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f78bf7bf458d13',t:'MTc5NTUxNDIxOA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f78bf7bf458d13',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
