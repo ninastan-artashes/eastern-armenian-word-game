@@ -498,22 +498,34 @@ header{
 }
 .wtext .hl-exact{color:var(--accent)}
 /* nine- and ten-letter words get a smaller face so a whole word fits one line */
+.wcard[data-len="9"],
+.wcard[data-len="10"]{padding:9px 7px; gap:5px}
 .wcard[data-len="9"] .wtext,
 .wcard[data-len="10"] .wtext{
-  font-size:12.5px;
-  letter-spacing:0;
+  font-size:11.5px;
+  letter-spacing:-.005em;
   line-height:1.25;
   overflow-wrap:break-word;
   word-break:normal;
 }
+/* a word is never broken across lines; the gloss truncates instead */
+.wcard .wword{white-space:nowrap}
+/* 7–8 letters: slightly tighter padding + a touch smaller face so the longest
+   ones still fit one line inside a 112 px track on tablets */
+.wcard[data-len="7"],
+.wcard[data-len="8"]{padding:9px 6px; gap:4px}
+.wcard[data-len="7"] .wtext,
+.wcard[data-len="8"] .wtext{font-size:14px; letter-spacing:.01em}
 .wtext .hl-present{
   text-decoration:underline;
   text-decoration-color:var(--present);
   text-decoration-thickness:2px;
   text-underline-offset:3px;
 }
-.wcard .wtext{display:flex; flex-direction:column; gap:1px; min-width:0}
-.wcard .wgloss{font-size:10px; font-weight:500; color:var(--muted); letter-spacing:0; line-height:1.25;white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%}
+.wcard .wtext{min-width:0}
+.wcard .wword{display:block}
+.wcard .wgloss{display:block; margin-top:1px; font-size:10px; font-weight:500; color:var(--muted);
+  letter-spacing:0; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%}
 .wcard[data-len="9"] .wgloss, .wcard[data-len="10"] .wgloss{font-size:9px}
 .det-gloss{margin:2px 0 10px; font-size:13px; line-height:1.55; color:var(--text)}
 .wmeta{
@@ -1375,7 +1387,7 @@ function renderResults(matches, tierCounts, allTierCount){
   const showLen = state.len === 0;
   grid.innerHTML = slice.map((e, idx) =>
     `<button class="wcard" data-idx="${idx}" data-len="${e.len}">` +
-      `<span class="wtext">${formatWordHighlighted(e)}<span class="wgloss">${e.gloss >= 0 ? esc(firstSense(GLOSS.glosses[e.gloss])) : ""}</span></span>` +
+      `<span class="wtext"><span class="wword">${formatWordHighlighted(e)}</span><span class="wgloss">${e.gloss >= 0 ? esc(firstSense(GLOSS.glosses[e.gloss])) : ""}</span></span>` +
       `<span class="wmeta">${showLen ? `<span class="wlen">${e.len}</span>` : ""}<i class="dot ${e.tier}" title="${t(e.tier)}"></i></span>` +
     `</button>`
   ).join("");
@@ -1714,5 +1726,5 @@ window.HYEXPLORER = {
   handleWildcard, handlePastePattern, setTarget, resetAll
 };
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f78bf7bf458d13',t:'MTc5NTUxNDIxOA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f78bf7bf458d13',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5ff8fd4aab4fca2',t:'MTc5NTU5ODI2Mg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5ff8fd4aab4fca2',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5f78bf7bf458d13',t:'MTc5NTUxNDIxOA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5f78bf7bf458d13',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5ffab603dbed402',t:'MTc5NTU5OTM5MA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5ffab603dbed402',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
